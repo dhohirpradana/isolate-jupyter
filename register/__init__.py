@@ -10,17 +10,17 @@ load_dotenv()
 
 secret_env = os.environ.get('SECRET')
 
-def handler():
+def handler():  
+    if secret == secret_env:
+        pass
+    else:
+        return jsonify({'error': 'Invalid key!'}), 403
+        
     input_filename = 'input.yaml'
     
     # DELETE USER
     if request.method == 'DELETE':
         secret = request.args.get('secret')
-        
-        if secret == secret_env:
-            pass
-        else:
-            return jsonify({'error': 'Invalid key!'}), 403
         
         try:
             username = request.args.get('username')
