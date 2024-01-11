@@ -52,4 +52,13 @@ def rmdir(path):
     except requests.exceptions.RequestException as err:
         return (False, f'Request Exception: {err}')
     
-    
+# check connection
+def check_connection():
+    try:
+        r = requests.get(hdfs_url)
+        print("pb conn success")
+        return True
+    except Exception as e:
+        print(str(e))
+        print("pb conn failed")
+        return False
