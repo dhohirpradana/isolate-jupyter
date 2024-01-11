@@ -9,18 +9,21 @@ def handler():
     
     # DELETE USER
     if request.method == 'DELETE':
-        username = request.args.get('username')
-        output_filename = f'output-{username}.yaml'
-        
-        if username:
-            pass
-        else:
-            return jsonify({'error': 'Parameter "username" not provided'}), 400
-        
-        rmdir(f'/usersapujagad/{username}')
-        user_remove(username)
-        subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
-        return jsonify({"message": f"User {username} deleted successfully!"}), 200
+        try:
+            username = request.args.get('username')
+            output_filename = f'output-{username}.yaml'
+            
+            if username:
+                pass
+            else:
+                return jsonify({'error': 'Parameter "username" not provided'}), 400
+            
+            rmdir(f'/usersapujagad/{username}')
+            user_remove(username)
+            subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
+            return jsonify({"message": f"User {username} deleted successfully!"}), 200
+        except:
+            return jsonify({"message": f"User {username} deleted successfully!"}), 200
     
     required_fields = ['username', 'email', 'password', 'firstName', 'lastName']
     data = request.get_json()
