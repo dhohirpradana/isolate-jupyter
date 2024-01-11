@@ -7,6 +7,13 @@ def handler():
     input_filename = 'input.yaml'
     output_filename = 'output.yaml'
     
+    # DELETE USER
+    if request.method == 'DELETE':
+        rmdir(f'/usersapujagad/{service_name}')
+        user_remove(service_name)
+        subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
+        return jsonify({"message": f"User {service_name} deleted successfully!"}), 200
+    
     required_fields = ['username', 'email', 'password', 'firstName', 'lastName']
     data = request.get_json()
     
@@ -31,13 +38,6 @@ def handler():
     
     if not hdfs_conn:
         return jsonify({"message": "Connection error to HDFS."}), 500
-    
-    # DELETE USER
-    if request.method == 'DELETE':
-        rmdir(f'/usersapujagad/{service_name}')
-        user_remove(service_name)
-        subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
-        return jsonify({"message": f"User {service_name} deleted successfully!"}), 200
     
     service_name = username
     user_not_exists = user_check(email, service_name)
