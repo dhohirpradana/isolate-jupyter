@@ -1,15 +1,16 @@
 from flask import Flask, request, jsonify
+import subprocess
 from kubernetes import check_service, get_unused_port
 from hdfs import mkdir, rmdir, check_connection as hdfs_check_connection
 from pb_user import user_create, user_remove, check_connection as pb_check_connection, user_check
 
 def handler():
     input_filename = 'input.yaml'
-    output_filename = 'output.yaml'
     
     # DELETE USER
     if request.method == 'DELETE':
         username = request.args.get('username')
+        output_filename = f'output-{username}.yaml'
         
         if username:
             pass
@@ -36,6 +37,8 @@ def handler():
     email = data['email']
     first_name = data['firstName']
     last_name = data['lastName']
+    
+    output_filename = f'output-{username}.yaml'
     
     pb_conn = pb_check_connection()
     hdfs_conn = hdfs_check_connection()
@@ -76,8 +79,6 @@ def handler():
 
             with open(output_filename, 'r') as file:
                 yaml_data = file.read()
-                
-            import subprocess
 
             try:
                 subprocess.run(["kubectl", "apply", "-f", output_filename], check=True, text=True)
