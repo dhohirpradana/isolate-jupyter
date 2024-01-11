@@ -3,11 +3,11 @@ from kubernetes import check_service, get_unused_port
 from hdfs import mkdir, rmdir, check_connection as hdfs_check_connection
 from pb_user import user_create, user_remove, check_connection as pb_check_connection, user_check
 
-def handler(username):
+def handler():
     input_filename = 'input.yaml'
     output_filename = 'output.yaml'
     
-    required_fields = ['email', 'password', 'firstName', 'lastName']
+    required_fields = ['username', 'email', 'password', 'firstName', 'lastName']
     data = request.get_json()
     
     if not data:
@@ -17,6 +17,7 @@ def handler(username):
         if field not in data or not data[field]:
             return jsonify({"message": f"{field} is required."}), 400
     
+    username = data['username']
     password = data['password']
     email = data['email']
     first_name = data['firstName']
