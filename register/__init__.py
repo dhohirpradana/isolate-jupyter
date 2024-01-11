@@ -1,14 +1,27 @@
 from flask import Flask, request, jsonify
 import subprocess
+import os
 from kubernetes import check_service, get_unused_port
 from hdfs import mkdir, rmdir, check_connection as hdfs_check_connection
 from pb_user import user_create, user_remove, check_connection as pb_check_connection, user_check
+from dotenv import load_dotenv
+
+load_dotenv()
+
+secret_env = os.environ.get('SECRET')
 
 def handler():
     input_filename = 'input.yaml'
     
     # DELETE USER
     if request.method == 'DELETE':
+        secret = request.args.get('secret')
+        
+        if secret == secret_env:
+            pass
+        else:
+            return jsonify({'error': 'Invalid key!'}), 403
+        
         try:
             username = request.args.get('username')
             output_filename = f'output-{username}.yaml'
@@ -20,7 +33,8 @@ def handler():
             
             rmdir(f'/usersapujagad/{username}')
             user_remove(username)
-            subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
+            subprocess.run(["kubectl", "-n", "sapujagad2", "delete", "statefulset", f"jupyter-{username}"], check=True, text=True)
+            subprocess.run(["kubectl", "-n", "sapujagad2", "delete", "service", f"jupyter-{username}-nodeport"], check=True, text=True)
             return jsonify({"message": f"User {username} deleted successfully!"}), 200
         except:
             return jsonify({"message": f"User {username} deleted successfully!"}), 200
