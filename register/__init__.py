@@ -92,7 +92,7 @@ def handler():
                 
                 # POCKETBASE
                 create_user = user_create(unused_port_result, username, password, email, first_name, last_name)
-                if create_user(0) == False:
+                if create_user[0] == False:
                     rmdir(f'/usersapujagad/{service_name}')
                     subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
                     return jsonify({"error": f"Register not succesfully. {create_user[1]}"}), 500

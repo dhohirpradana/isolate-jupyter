@@ -40,9 +40,6 @@ def user_create(j_port, username, password, email, first_name, last_name):
                             "Authorization": "Bearer " + pb_token
                         }
         )
-        r.raise_for_status()
-        data = r.json()
-        status_code = r.status_code
         return (True, None)
     
     except Exception as e:
