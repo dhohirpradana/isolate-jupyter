@@ -9,6 +9,13 @@ def handler():
     
     # DELETE USER
     if request.method == 'DELETE':
+        username = request.args.get('username')
+        
+        if username:
+            pass
+        else:
+            return jsonify({'error': 'Parameter "username" not provided'}), 400
+        
         rmdir(f'/usersapujagad/{service_name}')
         user_remove(service_name)
         subprocess.run(["kubectl", "delete", "-f", output_filename], check=True, text=True)
