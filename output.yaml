@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jupyter-dhohir2
+  namespace: sapujagad2
+spec:
+  selector:
+    matchLabels:
+      app: jupyter-dhohir2
+  serviceName: jupyter-dhohir2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jupyter-dhohir2
+    spec:
+      containers:
+        nodeSelector:
+          kubernetes.io/hostname: 
+        - name: sleep
+          image: adisurya1512/jupyterhub:test4
+          command: ["jupyterhub"]
+          args: ["--config", "/etc/jupyterhub/jupyterhub_config.py"]
+          envFrom:
+            - configMapRef:
+                name: aws-env-g45526fc96
+            - configMapRef:
+                name: hadoop-env-544cf4678g
+            - configMapRef:
+                name: hbase-env-ccmtmcf282
+            - configMapRef:
+                name: hive-env-kd6b4bmt54
+            - configMapRef:
+                name: ozone-env-2ghbdmg5kt
+            - configMapRef:
+                name: spark-env-c58k287t2g
+            - configMapRef:
+                name: tez-env-5mm4ct4mb5
+            - configMapRef:
+                name: trino-env-m8kk8bbktg
+            - configMapRef:
+                name: zookeeper-env-k4htkf44kk
+          env:
+            - name: HADOOP_USER_NAME
+              value: hdfs
+            - name: HADOOP_CLASSPATH
+              value: $(TEZ_CONF_DIR):$(TEZ_JARS)/*:$(TEZ_JARS)/lib/*
+            - name: JAVA_HOME
+              value: /usr/local/openjdk-8/
+            - name: JUPYTERHUB_ADMIN
+              value: admin
+            - name: PATH
+              value: >-
+                $(TRINO_HOME)/trino-cli/bin:$(HBASE_HOME)/bin:$(HIVE_HOME)/bin:$(OZONE_HOME)/bin:$(SPARK_HOME)/bin:$(HADOOP_HOME)/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          volumeMounts:
+            - mountPath: /etc/hadoop/conf
+              name: hadoop-conf
+            - mountPath: /etc/hbase/conf
+              name: hbase-conf
+            - mountPath: /etc/hive/conf
+              name: hive-conf
+            - mountPath: /etc/ozone/conf
+              name: ozone-conf
+            - mountPath: /etc/spark/conf
+              name: spark-conf
+            - mountPath: /etc/tez/conf
+              name: tez-conf
+            - mountPath: /etc/trino/conf/cli.properties
+              name: trino-conf
+              subPath: cli.properties
+            - mountPath: /etc/zookeeper/conf
+              name: zookeeper-conf
+            - mountPath: /opt/hadoop
+              name: package-hadoop
+            - mountPath: /opt/hbase
+              name: package-hbase-client
+            - mountPath: /opt/hive
+              name: package-hive
+            - mountPath: /opt/ozone
+              name: package-ozone
+            - mountPath: /opt/spark
+              name: package-spark
+            - mountPath: /opt/tez
+              name: package-tez
+            - mountPath: /opt/trino
+              name: package-trino
+            - mountPath: /data
+              name: package-jupyter
+            - mountPath: /etc/jupyterhub
+              name: jupyterhub-conf
+          workingDir: /home/zookage
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: jupyterhub-conf-k88fm2gkmm
+          name: jupyterhub-conf
+        - configMap:
+            defaultMode: 420
+            name: hadoop-conf-4f942k92fc
+          name: hadoop-conf
+        - configMap:
+            defaultMode: 420
+            name: hbase-conf-2tcbdd6gb5
+          name: hbase-conf
+        - configMap:
+            defaultMode: 420
+            name: hive-conf-f46ccdg5d2
+          name: hive-conf
+        - configMap:
+            defaultMode: 420
+            name: ozone-conf-fmhfkb24c6
+          name: ozone-conf
+        - configMap:
+            defaultMode: 420
+            name: spark-conf-8447tfgmcf
+          name: spark-conf
+        - configMap:
+            defaultMode: 420
+            name: tez-conf-59kt2g4ff7
+          name: tez-conf
+        - configMap:
+            defaultMode: 420
+            name: trino-conf-kc8456thk2
+          name: trino-conf
+        - configMap:
+            defaultMode: 420
+            name: zookeeper-conf-kd8h25tc58
+          name: zookeeper-conf
+        - name: package-hadoop
+          persistentVolumeClaim:
+            claimName: package-hadoop
+        - name: package-hbase-client
+          persistentVolumeClaim:
+            claimName: package-hbase-client
+        - name: package-hive
+          persistentVolumeClaim:
+            claimName: package-hive
+        - name: package-ozone
+          persistentVolumeClaim:
+            claimName: package-ozone
+        - name: package-spark
+          persistentVolumeClaim:
+            claimName: package-spark
+        - name: package-tez
+          persistentVolumeClaim:
+            claimName: package-tez
+        - name: package-trino
+          persistentVolumeClaim:
+            claimName: package-trino
+        - name: package-jupyter
+          persistentVolumeClaim:
+            claimName: package-jupyter
+  volumeClaimTemplates: []
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jupyter-dhohir2-nodeport
+  namespace: sapujagad2
+spec:
+  selector:
+    app: jupyter-dhohir2
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: SERVICE_PORT
+  type: NodePort
