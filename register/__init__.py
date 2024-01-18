@@ -210,7 +210,8 @@ def handler():
                 create_jupyter_user()
 
                 # HDFS
-                hdfs_mkdir = mkdir(f'/usersapujagad/{company}/{service_name}')
+                hdfs_mkdir = mkdir(
+                    f'/usersapujagad/{company}/{service_name}', username)
 
                 if hdfs_mkdir[0] is False:
                     delete_dpy(output_filename)
