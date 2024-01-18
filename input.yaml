@@ -25,10 +25,13 @@ spec:
             - "-c"
             - |
               useradd -m -s /bin/bash -p $(openssl passwd -1 -salt 'salt' 'SERVICE_NAME') SERVICE_NAME &&
+              mkdir -p /home/SERVICE_NAME &&
               chown -R SERVICE_NAME:SERVICE_NAME /home/SERVICE_NAME &&
               chmod 700 /home/SERVICE_NAME &&
               echo 'SERVICE_NAME ALL=(ALL:ALL) ALL' >> /etc/sudoers &&
-              jupyterhub --config /etc/jupyterhub/jupyterhub_config.py
+              cp /etc/jupyterhub/jupyterhub_config.py jupyterhub_config.py &&
+              sed -i 's/"HADOOP_USER_NAME": "hdfs"/"HADOOP_USER_NAME": "SERVICE_NAME"/' jupyterhub_config.py &&
+              jupyterhub --config jupyterhub_config.py
           envFrom:
             - configMapRef:
                 name: aws-env-g45526fc96
@@ -50,7 +53,7 @@ spec:
                 name: zookeeper-env-k4htkf44kk
           env:
             - name: HADOOP_USER_NAME
-              value: hdfs
+              value: SERVICE_NAME
             - name: HADOOP_CLASSPATH
               value: $(TEZ_CONF_DIR):$(TEZ_JARS)/*:$(TEZ_JARS)/lib/*
             - name: JAVA_HOME
@@ -100,9 +103,7 @@ spec:
       dnsConfig:
         nameservers:
           - 8.8.8.8
-      dnsPolicy: None
-      # dnsPolicy: ClusterFirst
-      # hostNetwork: true
+      dnsPolicy: ClusterFirst
       terminationGracePeriodSeconds: 0
       volumes:
         - configMap:

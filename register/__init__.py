@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import time
+import requests
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from kubernetes import check_service, get_unused_port
@@ -16,6 +17,21 @@ secret_env = os.environ.get('SECRET')
 def delete_dpy(output_filename):
     subprocess.run(["kubectl", "delete", "-f",
                     output_filename], check=True, text=True)
+
+
+def delete_jupyter_user(username):
+    url = f'http://10.1.111.7:30004/hub/api/users/{username}'
+    try:
+        response = requests.delete(url)
+        response.raise_for_status()
+        data = response.json()
+
+        print(data)
+        print('Jupyter User Deleted')
+        return True
+    except requests.exceptions.HTTPError as errh:
+        print(f'HTTP Error: {errh}')
+        return False
 
 
 def handler():
@@ -47,6 +63,7 @@ def handler():
                 return jsonify({'error': 'Parameter "company" not provided'}), 400
 
             rmdir(f'/usersapujagad/{company}/{username}')
+            delete_jupyter_user(username)
             user_remove(username)
             subprocess.run(["kubectl", "-n", "sapujagad2", "delete",
                            "statefulset", f"jupyter-{username}"], check=True, text=True)
@@ -122,6 +139,10 @@ def handler():
                 subprocess.run(["kubectl", "apply", "-f",
                                output_filename], check=True, text=True)
 
+                print("Sleep 10")
+                time.sleep(10)
+                print("Sleep finish")
+
                 # create user in jupyterhub
                 def create_jupyter_user():
                     try:
@@ -178,6 +199,7 @@ def handler():
                                         else:
                                             print(
                                                 "Max retry reached. Exiting...")
+                                            delete_jupyter_user(service_name)
                                             delete_dpy(output_filename)
                                             return jsonify({"error": f"Register not succesfully. {e}"}), 500
 
@@ -191,6 +213,7 @@ def handler():
                                     set_user_as_admin()
                                 else:
                                     print("Max retry reached. Exiting...")
+                                    delete_jupyter_user(service_name)
                                     delete_dpy(output_filename)
                                     return jsonify({"error": f"Register not succesfully. {e}"}), 500
 
@@ -204,6 +227,7 @@ def handler():
                             create_jupyter_user()
                         else:
                             print("Max retry reached. Exiting...")
+                            delete_jupyter_user(service_name)
                             delete_dpy(output_filename)
                             return jsonify({"error": f"Register not succesfully. {e}"}), 500
 
@@ -211,9 +235,10 @@ def handler():
 
                 # HDFS
                 hdfs_mkdir = mkdir(
-                    f'/usersapujagad/{company}/{service_name}', username)
+                    f'/usersapujagad/{company}/{service_name}', service_name)
 
                 if hdfs_mkdir[0] is False:
+                    delete_jupyter_user(service_name)
                     delete_dpy(output_filename)
                     return jsonify({"error": f"Register not succesfully. {hdfs_mkdir[1]}"}), 500
 
@@ -222,6 +247,7 @@ def handler():
                     unused_port_result, username, password, email, first_name, last_name, created_by, company)
                 if create_user[0] is False:
                     rmdir(f'/usersapujagad/{company}/{service_name}')
+                    delete_jupyter_user(service_name)
                     delete_dpy(output_filename)
                     return jsonify({"error": f"Register not succesfully. {create_user[1]}"}), 500
 
