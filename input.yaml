@@ -17,8 +17,18 @@ spec:
       containers:
         - name: jupyter
           image: adisurya1512/jupyterhub:test4
-          command: ["jupyterhub"]
-          args: ["--config", "/etc/jupyterhub/jupyterhub_config.py"]
+          # command: ["jupyterhub"]
+          # args: ["--config", "/etc/jupyterhub/jupyterhub_config.py"]
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - |
+              useradd -m -s /bin/bash -p $(openssl passwd -1 -salt 'salt' 'SERVICE_NAME') SERVICE_NAME &&
+              chown -R SERVICE_NAME:SERVICE_NAME /home/SERVICE_NAME &&
+              chmod 700 /home/SERVICE_NAME &&
+              echo 'SERVICE_NAME ALL=(ALL:ALL) ALL' >> /etc/sudoers &&
+              jupyterhub --config /etc/jupyterhub/jupyterhub_config.py
           envFrom:
             - configMapRef:
                 name: aws-env-g45526fc96
@@ -87,6 +97,12 @@ spec:
             - mountPath: /etc/jupyterhub
               name: jupyterhub-conf
           workingDir: /home/zookage
+      dnsConfig:
+        nameservers:
+          - 8.8.8.8
+      dnsPolicy: None
+      # dnsPolicy: ClusterFirst
+      # hostNetwork: true
       terminationGracePeriodSeconds: 0
       volumes:
         - configMap:

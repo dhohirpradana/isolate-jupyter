@@ -8,18 +8,19 @@ load_dotenv()
 
 hdfs_url = os.getenv('HDFS_URL')
 
+
 def mkdir(path):
-    url = f'{hdfs_url}/webhdfs/v1{path}?user.name=hdfs&op=MKDIRS'
-    
+    url = f'{hdfs_url}/webhdfs/v1{path}?user.name=hdfs&op=MKDIRS&op=SETPERMISSION&permission=777'
+
     try:
         response = requests.put(url)
         response.raise_for_status()
         data = response.json()
-        
+
         print(data)
         print('MKDIR succesfully')
-        
-        return(True, None)
+
+        return (True, None)
 
     except requests.exceptions.HTTPError as errh:
         return (False, f'HTTP Error: {errh}')
@@ -29,19 +30,20 @@ def mkdir(path):
         return (False, f'Timeout Error: {errt}')
     except requests.exceptions.RequestException as err:
         return (False, f'Request Exception: {err}')
-    
+
+
 def rmdir(path):
     url = f'{hdfs_url}/webhdfs/v1{path}?user.name=hdfs&op=DELETE&recursive=true'
-    
+
     try:
         response = requests.delete(url)
         response.raise_for_status()
         data = response.json()
-        
+
         print(data)
         print('RMDIR succesfully')
-        
-        return(True, None)
+
+        return (True, None)
 
     except requests.exceptions.HTTPError as errh:
         return (False, f'HTTP Error: {errh}')
@@ -51,8 +53,10 @@ def rmdir(path):
         return (False, f'Timeout Error: {errt}')
     except requests.exceptions.RequestException as err:
         return (False, f'Request Exception: {err}')
-    
+
 # check connection
+
+
 def check_connection():
     try:
         r = requests.get(hdfs_url)
