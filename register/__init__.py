@@ -19,21 +19,6 @@ def delete_dpy(output_filename):
                     output_filename], check=True, text=True)
 
 
-def delete_jupyter_user(username):
-    url = f'http://10.1.111.7:30004/hub/api/users/{username}'
-    try:
-        response = requests.delete(url)
-        response.raise_for_status()
-        data = response.json()
-
-        print(data)
-        print('Jupyter User Deleted')
-        return True
-    except requests.exceptions.HTTPError as errh:
-        print(f'HTTP Error: {errh}')
-        return False
-
-
 def handler():
     secret = request.args.get('secret')
     if secret == secret_env:
@@ -42,7 +27,6 @@ def handler():
         return jsonify({'error': 'Invalid key!'}), 403
 
     input_filename = 'input.yaml'
-    try_count = 10
 
     # DELETE USER
     if request.method == 'DELETE':
@@ -63,12 +47,19 @@ def handler():
                 return jsonify({'error': 'Parameter "company" not provided'}), 400
 
             rmdir(f'/usersapujagad/{company}/{username}')
-            delete_jupyter_user(username)
             user_remove(username)
             subprocess.run(["kubectl", "-n", "sapujagad2", "delete",
                            "statefulset", f"jupyter-{username}"], check=True, text=True)
             subprocess.run(["kubectl", "-n", "sapujagad2", "delete", "service",
                            f"jupyter-{username}-nodeport"], check=True, text=True)
+            # delete pv
+            subprocess.run(["kubectl", "-n", "sapujagad2", "delete", "pv",
+                           f"jupyter-{username}-pv"], check=True, text=True)
+            # delete pvc
+            subprocess.run(["kubectl", "-n", "sapujagad2", "delete", "pvc",
+                           f"jupyter-{username}-storage-jupyter-{username}-0"], check=True, text=True)
+            # delete from file
+            delete_dpy(output_filename)
             return jsonify({"message": f"User {username} deleted successfully!"}), 200
         except:
             return jsonify({"message": f"User {username} deleted successfully!"}), 200
@@ -109,6 +100,29 @@ def handler():
     if not user_not_exists:
         return jsonify({"message": f"User with email {email} or username {service_name} already exists."}), 409
 
+    def check_service_ready(unused_port_result):
+        try:
+            response = requests.get(
+                f'http://10.1.111.7:{unused_port_result}', timeout=5)
+            response.raise_for_status()
+            return True
+        except:
+            return False
+
+    def start_server(unused_port_result):
+        # start server
+        try:
+            url_start = f'http://10.1.111.7:{unused_port_result}/hub/api/users/jupyter/server'
+            response = requests.post(
+                url_start, timeout=5, headers={
+                    'Authorization': 'token test-token-123'
+                })
+            response.raise_for_status()
+            print("response", response.json())
+            return True
+        except:
+            return False
+
     try:
         check_svc = check_service(f"jupyter-{service_name}")
         if check_svc == '1':
@@ -139,115 +153,33 @@ def handler():
                 subprocess.run(["kubectl", "apply", "-f",
                                output_filename], check=True, text=True)
 
-                print("Sleep 10")
-                time.sleep(10)
-                print("Sleep finish")
-
-                # create user in jupyterhub
-                def create_jupyter_user():
-                    try:
-                        subprocess.run(
-                            f"curl --location --request POST 'http://10.1.111.7:{unused_port_result}/hub/api/users/{service_name}' --header 'Authorization: Bearer test-token-123'", shell=True, check=True, text=True)
-                        print("Jupyter User Created")
-
-                        try_count_admin = 10
-
-                        # # set user as admin
-                        def set_user_as_admin():
-                            data_dict = {"name": service_name, "admin": True}
-
-                            curl_update_command = [
-                                'curl',
-                                '--location',
-                                '--request',
-                                'PATCH',
-                                f'http://10.1.111.7:{unused_port_result}/hub/api/users/{service_name}',
-                                '--header',
-                                'Authorization: Bearer test-token-123',
-                                '--header',
-                                'Content-Type: application/json',
-                                '--data',
-                                json.dumps(data_dict)
-                            ]
-
-                            try_count_start_server = 10
-
-                            try:
-                                subprocess.run(curl_update_command, check=True)
-
-                                # start server
-                                def start_server():
-                                    curl_command = [
-                                        'curl',
-                                        '--location',
-                                        '--request',
-                                        'POST',
-                                        f'http://10.1.111.7:{unused_port_result}/hub/api/users/{service_name}/server',
-                                        '--header',
-                                        'Authorization: Bearer test-token-123'
-                                    ]
-
-                                    try:
-                                        subprocess.run(
-                                            curl_command, check=True)
-                                    except subprocess.CalledProcessError as e:
-                                        print(f"Error: {e}")
-                                        if try_count_start_server > 0:
-                                            print("Retrying...")
-                                            time.sleep(2)
-                                            start_server()
-                                        else:
-                                            print(
-                                                "Max retry reached. Exiting...")
-                                            delete_jupyter_user(service_name)
-                                            delete_dpy(output_filename)
-                                            return jsonify({"error": f"Register not succesfully. {e}"}), 500
-
-                                start_server()
-
-                            except subprocess.CalledProcessError as e:
-                                print(f"Error: {e}")
-                                if try_count_admin > 0:
-                                    print("Retrying...")
-                                    time.sleep(2)
-                                    set_user_as_admin()
-                                else:
-                                    print("Max retry reached. Exiting...")
-                                    delete_jupyter_user(service_name)
-                                    delete_dpy(output_filename)
-                                    return jsonify({"error": f"Register not succesfully. {e}"}), 500
-
-                            set_user_as_admin()
-
-                    except subprocess.CalledProcessError as e:
-                        print(f"Error: {e}")
-                        if try_count > 0:
-                            print("Retrying...")
-                            time.sleep(2)
-                            create_jupyter_user()
-                        else:
-                            print("Max retry reached. Exiting...")
-                            delete_jupyter_user(service_name)
-                            delete_dpy(output_filename)
-                            return jsonify({"error": f"Register not succesfully. {e}"}), 500
-
-                create_jupyter_user()
+                try_count = 10
+                while try_count > 0:
+                    if check_service_ready(unused_port_result):
+                        start_server(unused_port_result)
+                        break
+                    else:
+                        print("Service not ready yet. Retrying...")
+                        time.sleep(5)
+                    try_count -= 1
+                    if try_count == 0:
+                        delete_dpy(output_filename)
+                        return jsonify({"error": "Service not ready."}), 500
 
                 # HDFS
                 hdfs_mkdir = mkdir(
                     f'/usersapujagad/{company}/{service_name}', service_name)
 
                 if hdfs_mkdir[0] is False:
-                    delete_jupyter_user(service_name)
                     delete_dpy(output_filename)
                     return jsonify({"error": f"Register not succesfully. {hdfs_mkdir[1]}"}), 500
 
                 # POCKETBASE
                 create_user = user_create(
                     unused_port_result, username, password, email, first_name, last_name, created_by, company)
+
                 if create_user[0] is False:
                     rmdir(f'/usersapujagad/{company}/{service_name}')
-                    delete_jupyter_user(service_name)
                     delete_dpy(output_filename)
                     return jsonify({"error": f"Register not succesfully. {create_user[1]}"}), 500
 

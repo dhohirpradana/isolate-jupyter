@@ -1,3 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jupyter-SERVICE_NAME-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /tmp/jupyter-SERVICE_NAME
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jupyter-SERVICE_NAME-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -14,6 +38,15 @@ spec:
       labels:
         app: jupyter-SERVICE_NAME
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-worker3
       containers:
         - name: jupyter
           image: adisurya1512/jupyterhub:test4
@@ -24,13 +57,7 @@ spec:
           args:
             - "-c"
             - |
-              useradd -m -s /bin/bash -p $(openssl passwd -1 -salt 'salt' 'SERVICE_NAME') SERVICE_NAME &&
-              mkdir -p /home/SERVICE_NAME &&
-              chown -R SERVICE_NAME:SERVICE_NAME /home/SERVICE_NAME &&
-              chmod 700 /home/SERVICE_NAME &&
-              echo 'SERVICE_NAME ALL=(ALL:ALL) ALL' >> /etc/sudoers &&
               cp /etc/jupyterhub/jupyterhub_config.py jupyterhub_config.py &&
-              sed -i 's/"HADOOP_USER_NAME": "hdfs"/"HADOOP_USER_NAME": "SERVICE_NAME"/' jupyterhub_config.py &&
               jupyterhub --config jupyterhub_config.py
           envFrom:
             - configMapRef:
@@ -99,11 +126,14 @@ spec:
               name: package-jupyter
             - mountPath: /etc/jupyterhub
               name: jupyterhub-conf
+            - mountPath: /home/jupyter
+              name: storage-volume
           workingDir: /home/zookage
       dnsConfig:
         nameservers:
+          - 1.1.1.1
           - 8.8.8.8
-      dnsPolicy: ClusterFirst
+      dnsPolicy: None
       terminationGracePeriodSeconds: 0
       volumes:
         - configMap:
@@ -166,7 +196,17 @@ spec:
         - name: package-jupyter
           persistentVolumeClaim:
             claimName: package-jupyter
-  volumeClaimTemplates: []
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: jupyter-SERVICE_NAME-storage-jupyter-SERVICE_NAME-0
+  volumeClaimTemplates:
+    - metadata:
+        name: jupyter-SERVICE_NAME-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
