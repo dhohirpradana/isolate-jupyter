@@ -1,0 +1,486 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    field.cattle.io/publicEndpoints: >-
+      [{"port":30007,"protocol":"TCP","serviceName":"sapujagad2:jupyter-bmkg2-nodeport","allNodes":true}]
+    kubectl.kubernetes.io/last-applied-configuration: >
+      {"apiVersion":"apps/v1","kind":"StatefulSet","metadata":{"annotations":{},"name":"jupyter-bmkg2","namespace":"sapujagad2"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"jupyter-bmkg2"}},"serviceName":"jupyter-bmkg2","template":{"metadata":{"labels":{"app":"jupyter-bmkg2"}},"spec":{"containers":[{"args":["-c","useradd
+      -m -s /bin/bash -p $(openssl passwd -1 -salt 'salt' 'bmkg2') bmkg2
+      \u0026\u0026\nmkdir -p /home/bmkg2 \u0026\u0026\nchown -R bmkg2:bmkg2
+      /home/bmkg2 \u0026\u0026\nchmod 700 /home/bmkg2 \u0026\u0026\necho 'bmkg2
+      ALL=(ALL:ALL) ALL' \u003e\u003e /etc/sudoers \u0026\u0026\njupyterhub
+      --config
+      /etc/jupyterhub/jupyterhub_config.py\n"],"command":["/bin/sh"],"env":[{"name":"HADOOP_USER_NAME","value":"hdfs"},{"name":"HADOOP_CLASSPATH","value":"$(TEZ_CONF_DIR):$(TEZ_JARS)/*:$(TEZ_JARS)/lib/*"},{"name":"JAVA_HOME","value":"/usr/local/openjdk-8/"},{"name":"JUPYTERHUB_ADMIN","value":"admin"},{"name":"PATH","value":"$(TRINO_HOME)/trino-cli/bin:$(HBASE_HOME)/bin:$(HIVE_HOME)/bin:$(OZONE_HOME)/bin:$(SPARK_HOME)/bin:$(HADOOP_HOME)/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"}],"envFrom":[{"configMapRef":{"name":"aws-env-g45526fc96"}},{"configMapRef":{"name":"hadoop-env-544cf4678g"}},{"configMapRef":{"name":"hbase-env-ccmtmcf282"}},{"configMapRef":{"name":"hive-env-kd6b4bmt54"}},{"configMapRef":{"name":"ozone-env-2ghbdmg5kt"}},{"configMapRef":{"name":"spark-env-c58k287t2g"}},{"configMapRef":{"name":"tez-env-5mm4ct4mb5"}},{"configMapRef":{"name":"trino-env-m8kk8bbktg"}},{"configMapRef":{"name":"zookeeper-env-k4htkf44kk"}}],"image":"adisurya1512/jupyterhub:test4","name":"jupyter","volumeMounts":[{"mountPath":"/etc/hadoop/conf","name":"hadoop-conf"},{"mountPath":"/etc/hbase/conf","name":"hbase-conf"},{"mountPath":"/etc/hive/conf","name":"hive-conf"},{"mountPath":"/etc/ozone/conf","name":"ozone-conf"},{"mountPath":"/etc/spark/conf","name":"spark-conf"},{"mountPath":"/etc/tez/conf","name":"tez-conf"},{"mountPath":"/etc/trino/conf/cli.properties","name":"trino-conf","subPath":"cli.properties"},{"mountPath":"/etc/zookeeper/conf","name":"zookeeper-conf"},{"mountPath":"/opt/hadoop","name":"package-hadoop"},{"mountPath":"/opt/hbase","name":"package-hbase-client"},{"mountPath":"/opt/hive","name":"package-hive"},{"mountPath":"/opt/ozone","name":"package-ozone"},{"mountPath":"/opt/spark","name":"package-spark"},{"mountPath":"/opt/tez","name":"package-tez"},{"mountPath":"/opt/trino","name":"package-trino"},{"mountPath":"/data","name":"package-jupyter"},{"mountPath":"/etc/jupyterhub","name":"jupyterhub-conf"}],"workingDir":"/home/zookage"}],"dnsPolicy":"ClusterFirst","hostNetwork":true,"terminationGracePeriodSeconds":0,"volumes":[{"configMap":{"defaultMode":420,"name":"jupyterhub-conf-k88fm2gkmm"},"name":"jupyterhub-conf"},{"configMap":{"defaultMode":420,"name":"hadoop-conf-4f942k92fc"},"name":"hadoop-conf"},{"configMap":{"defaultMode":420,"name":"hbase-conf-2tcbdd6gb5"},"name":"hbase-conf"},{"configMap":{"defaultMode":420,"name":"hive-conf-f46ccdg5d2"},"name":"hive-conf"},{"configMap":{"defaultMode":420,"name":"ozone-conf-fmhfkb24c6"},"name":"ozone-conf"},{"configMap":{"defaultMode":420,"name":"spark-conf-8447tfgmcf"},"name":"spark-conf"},{"configMap":{"defaultMode":420,"name":"tez-conf-59kt2g4ff7"},"name":"tez-conf"},{"configMap":{"defaultMode":420,"name":"trino-conf-kc8456thk2"},"name":"trino-conf"},{"configMap":{"defaultMode":420,"name":"zookeeper-conf-kd8h25tc58"},"name":"zookeeper-conf"},{"name":"package-hadoop","persistentVolumeClaim":{"claimName":"package-hadoop"}},{"name":"package-hbase-client","persistentVolumeClaim":{"claimName":"package-hbase-client"}},{"name":"package-hive","persistentVolumeClaim":{"claimName":"package-hive"}},{"name":"package-ozone","persistentVolumeClaim":{"claimName":"package-ozone"}},{"name":"package-spark","persistentVolumeClaim":{"claimName":"package-spark"}},{"name":"package-tez","persistentVolumeClaim":{"claimName":"package-tez"}},{"name":"package-trino","persistentVolumeClaim":{"claimName":"package-trino"}},{"name":"package-jupyter","persistentVolumeClaim":{"claimName":"package-jupyter"}}]}},"volumeClaimTemplates":[]}}
+  creationTimestamp: "2024-01-18T04:31:52Z"
+  generation: 1
+  managedFields:
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:kubectl.kubernetes.io/last-applied-configuration: {}
+        f:spec:
+          f:podManagementPolicy: {}
+          f:replicas: {}
+          f:revisionHistoryLimit: {}
+          f:selector: {}
+          f:serviceName: {}
+          f:template:
+            f:metadata:
+              f:labels:
+                .: {}
+                f:app: {}
+            f:spec:
+              f:containers:
+                k:{"name":"jupyter"}:
+                  .: {}
+                  f:args: {}
+                  f:command: {}
+                  f:env:
+                    .: {}
+                    k:{"name":"HADOOP_CLASSPATH"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"HADOOP_USER_NAME"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"JAVA_HOME"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"JUPYTERHUB_ADMIN"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"PATH"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                  f:envFrom: {}
+                  f:image: {}
+                  f:imagePullPolicy: {}
+                  f:name: {}
+                  f:resources: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+                  f:volumeMounts:
+                    .: {}
+                    k:{"mountPath":"/data"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/hadoop/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/hbase/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/hive/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/jupyterhub"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/ozone/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/spark/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/tez/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/etc/trino/conf/cli.properties"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                      f:subPath: {}
+                    k:{"mountPath":"/etc/zookeeper/conf"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/hadoop"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/hbase"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/hive"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/ozone"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/spark"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/tez"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                    k:{"mountPath":"/opt/trino"}:
+                      .: {}
+                      f:mountPath: {}
+                      f:name: {}
+                  f:workingDir: {}
+              f:dnsPolicy: {}
+              f:hostNetwork: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:terminationGracePeriodSeconds: {}
+              f:volumes:
+                .: {}
+                k:{"name":"hadoop-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"hbase-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"hive-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"jupyterhub-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"ozone-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"package-hadoop"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-hbase-client"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-hive"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-jupyter"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-ozone"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-spark"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-tez"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"package-trino"}:
+                  .: {}
+                  f:name: {}
+                  f:persistentVolumeClaim:
+                    .: {}
+                    f:claimName: {}
+                k:{"name":"spark-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"tez-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"trino-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+                k:{"name":"zookeeper-conf"}:
+                  .: {}
+                  f:configMap:
+                    .: {}
+                    f:defaultMode: {}
+                    f:name: {}
+                  f:name: {}
+          f:updateStrategy:
+            f:rollingUpdate:
+              .: {}
+              f:partition: {}
+            f:type: {}
+      manager: kubectl-client-side-apply
+      operation: Update
+      time: "2024-01-18T04:31:52Z"
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            f:field.cattle.io/publicEndpoints: {}
+      manager: rancher
+      operation: Update
+      time: "2024-01-18T04:31:52Z"
+    - apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:availableReplicas: {}
+          f:collisionCount: {}
+          f:currentReplicas: {}
+          f:currentRevision: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:updateRevision: {}
+          f:updatedReplicas: {}
+      manager: kube-controller-manager
+      operation: Update
+      subresource: status
+      time: "2024-01-18T04:31:59Z"
+  name: jupyter-bmkg2
+  namespace: sapujagad2
+  resourceVersion: "11971503"
+  uid: 59d9f463-c8bd-4388-ac1a-3a0b540a18af
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: jupyter-bmkg2
+  serviceName: jupyter-bmkg2
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: jupyter-bmkg2
+    spec:
+      containers:
+        - args:
+            - "-c"
+            - >
+              useradd -m -s /bin/bash -p $(openssl passwd -1 -salt 'salt'
+              'bmkg2') bmkg2 &&
+
+              mkdir -p /home/bmkg2 &&
+
+              chown -R bmkg2:bmkg2 /home/bmkg2 &&
+
+              chmod 700 /home/bmkg2 &&
+
+              echo 'bmkg2 ALL=(ALL:ALL) ALL' >> /etc/sudoers &&
+
+              jupyterhub --config /etc/jupyterhub/jupyterhub_config.py
+          command:
+            - /bin/sh
+          env:
+            - name: HADOOP_USER_NAME
+              value: hdfs
+            - name: HADOOP_CLASSPATH
+              value: $(TEZ_CONF_DIR):$(TEZ_JARS)/*:$(TEZ_JARS)/lib/*
+            - name: JAVA_HOME
+              value: /usr/local/openjdk-8/
+            - name: JUPYTERHUB_ADMIN
+              value: admin
+            - name: PATH
+              value: >-
+                $(TRINO_HOME)/trino-cli/bin:$(HBASE_HOME)/bin:$(HIVE_HOME)/bin:$(OZONE_HOME)/bin:$(SPARK_HOME)/bin:$(HADOOP_HOME)/bin:/usr/local/openjdk-8/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          envFrom:
+            - configMapRef:
+                name: aws-env-g45526fc96
+            - configMapRef:
+                name: hadoop-env-544cf4678g
+            - configMapRef:
+                name: hbase-env-ccmtmcf282
+            - configMapRef:
+                name: hive-env-kd6b4bmt54
+            - configMapRef:
+                name: ozone-env-2ghbdmg5kt
+            - configMapRef:
+                name: spark-env-c58k287t2g
+            - configMapRef:
+                name: tez-env-5mm4ct4mb5
+            - configMapRef:
+                name: trino-env-m8kk8bbktg
+            - configMapRef:
+                name: zookeeper-env-k4htkf44kk
+          image: adisurya1512/jupyterhub:test4
+          imagePullPolicy: IfNotPresent
+          name: jupyter
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/hadoop/conf
+              name: hadoop-conf
+            - mountPath: /etc/hbase/conf
+              name: hbase-conf
+            - mountPath: /etc/hive/conf
+              name: hive-conf
+            - mountPath: /etc/ozone/conf
+              name: ozone-conf
+            - mountPath: /etc/spark/conf
+              name: spark-conf
+            - mountPath: /etc/tez/conf
+              name: tez-conf
+            - mountPath: /etc/trino/conf/cli.properties
+              name: trino-conf
+              subPath: cli.properties
+            - mountPath: /etc/zookeeper/conf
+              name: zookeeper-conf
+            - mountPath: /opt/hadoop
+              name: package-hadoop
+            - mountPath: /opt/hbase
+              name: package-hbase-client
+            - mountPath: /opt/hive
+              name: package-hive
+            - mountPath: /opt/ozone
+              name: package-ozone
+            - mountPath: /opt/spark
+              name: package-spark
+            - mountPath: /opt/tez
+              name: package-tez
+            - mountPath: /opt/trino
+              name: package-trino
+            - mountPath: /data
+              name: package-jupyter
+            - mountPath: /etc/jupyterhub
+              name: jupyterhub-conf
+          workingDir: /home/zookage
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 0
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: jupyterhub-conf-k88fm2gkmm
+          name: jupyterhub-conf
+        - configMap:
+            defaultMode: 420
+            name: hadoop-conf-4f942k92fc
+          name: hadoop-conf
+        - configMap:
+            defaultMode: 420
+            name: hbase-conf-2tcbdd6gb5
+          name: hbase-conf
+        - configMap:
+            defaultMode: 420
+            name: hive-conf-f46ccdg5d2
+          name: hive-conf
+        - configMap:
+            defaultMode: 420
+            name: ozone-conf-fmhfkb24c6
+          name: ozone-conf
+        - configMap:
+            defaultMode: 420
+            name: spark-conf-8447tfgmcf
+          name: spark-conf
+        - configMap:
+            defaultMode: 420
+            name: tez-conf-59kt2g4ff7
+          name: tez-conf
+        - configMap:
+            defaultMode: 420
+            name: trino-conf-kc8456thk2
+          name: trino-conf
+        - configMap:
+            defaultMode: 420
+            name: zookeeper-conf-kd8h25tc58
+          name: zookeeper-conf
+        - name: package-hadoop
+          persistentVolumeClaim:
+            claimName: package-hadoop
+        - name: package-hbase-client
+          persistentVolumeClaim:
+            claimName: package-hbase-client
+        - name: package-hive
+          persistentVolumeClaim:
+            claimName: package-hive
+        - name: package-ozone
+          persistentVolumeClaim:
+            claimName: package-ozone
+        - name: package-spark
+          persistentVolumeClaim:
+            claimName: package-spark
+        - name: package-tez
+          persistentVolumeClaim:
+            claimName: package-tez
+        - name: package-trino
+          persistentVolumeClaim:
+            claimName: package-trino
+        - name: package-jupyter
+          persistentVolumeClaim:
+            claimName: package-jupyter
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+status:
+  availableReplicas: 1
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: jupyter-bmkg2-c8d8f888
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updateRevision: jupyter-bmkg2-c8d8f888
+  updatedReplicas: 1
