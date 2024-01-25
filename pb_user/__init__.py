@@ -10,7 +10,7 @@ load_dotenv()
 pb_user_url = os.environ.get('PB_USER_URL')
 pb_login_url = os.environ.get('PB_ADMIN_LOGIN_URL')
 print(pb_user_url)
-def user_create(j_port, username, password, email, first_name, last_name):
+def user_create(j_port, username, password, email, first_name, last_name, created_by, company):
     print({
         "email": email,
         "password": password,
@@ -20,7 +20,8 @@ def user_create(j_port, username, password, email, first_name, last_name):
         "lastName": last_name,
         "role": "authenticated",
         "jToken": "test-token-123",
-        "jPort": j_port
+        "jPort": j_port,
+        "createdBy": created_by
     })
     pb_token = token_get()
     try:
@@ -34,7 +35,9 @@ def user_create(j_port, username, password, email, first_name, last_name):
                             "lastName": last_name,
                             "role": "authenticated",
                             "jToken": "test-token-123",
-                            "jPort": j_port
+                            "jPort": j_port,
+                            "createdBy": created_by,
+                            "company": company
                         },
                         headers={
                             "Authorization": "Bearer " + pb_token
