@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from kubernetes import check_service, get_unused_port
 from hdfs import mkdir, rmdir, check_connection as hdfs_check_connection
 from pb_user import user_create, user_remove, check_connection as pb_check_connection, user_check
+from superset import register as superset_register
 
 load_dotenv()
 
@@ -182,6 +183,10 @@ def handler():
                     rmdir(f'/usersapujagad/{company}/{service_name}')
                     delete_dpy(output_filename)
                     return jsonify({"error": f"Register not succesfully. {create_user[1]}"}), 500
+
+                # register superset
+                superset_register(username, first_name,
+                                  last_name, email, password)
 
                 return jsonify({"message": f"Register user {service_name} successfully!", "port": unused_port_result}), 200
 

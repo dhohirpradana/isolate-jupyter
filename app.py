@@ -9,7 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 
 required_env_vars = ["PB_URL", "PB_ADMIN_LOGIN_URL", "PB_ADMIN_MAIL", "PB_USER_URL",
-                     "PB_ADMIN_PASSWORD", "HDFS_URL", "SECRET", "ALLOWED_IPS", "ALLOWED_DOMAINS_URL"]
+                     "PB_ADMIN_PASSWORD", "HDFS_URL", "SECRET", "ALLOWED_IPS", "ALLOWED_DOMAINS_URL", "SUPERSET_API_URL"]
 
 
 def validate_envs():
