@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+from flask import Flask, abort, request
+from register import handler as register_handler
+from dotenv import load_dotenv
+=======
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
 import os
 import requests
 from flask import Flask, abort, request
@@ -8,9 +14,13 @@ load_dotenv()
 
 app = Flask(__name__)
 
+<<<<<<< HEAD
+required_env_vars = ["PB_URL", "PB_ADMIN_LOGIN_URL", "PB_ADMIN_MAIL", "PB_USER_URL", "PB_ADMIN_PASSWORD", "HDFS_URL", "SECRET", "ALLOWED_IPS", "ALLOWED_DOMAINS"]
+=======
 required_env_vars = ["PB_URL", "PB_ADMIN_LOGIN_URL", "PB_ADMIN_MAIL", "PB_USER_URL",
                      "PB_ADMIN_PASSWORD", "HDFS_URL", "SECRET", "ALLOWED_IPS", "ALLOWED_DOMAINS_URL", "SUPERSET_API_URL"]
 
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
 
 def validate_envs():
     for env_var in required_env_vars:
@@ -18,6 +28,21 @@ def validate_envs():
             raise EnvironmentError(
                 f"Required environment variable {env_var} is not set.")
 
+<<<<<<< HEAD
+allowed_ips = os.environ.get('ALLOWED_IPS', '').split(',')
+allowed_domains = os.environ.get('ALLOWED_DOMAINS', '').split(',')
+
+def check_access():
+    client_ip = request.remote_addr
+    client_host = request.host
+
+    if client_ip not in allowed_ips and client_host not in allowed_domains:
+        abort(403)
+
+@app.route('/jupyter', methods=['POST', 'DELETE'])
+def replace_yaml():
+#    check_access()
+=======
 
 # allowed_ips = os.environ.get('ALLOWED_IPS', '').split(',')
 # allowed_domains = os.environ.get('ALLOWED_DOMAINS', '').split(',')
@@ -44,6 +69,7 @@ def validate_envs():
 @app.route('/jupyter', methods=['POST', 'DELETE'])
 def replace_yaml():
     #    check_access()
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
     validate_envs()
     return register_handler()
 

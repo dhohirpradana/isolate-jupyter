@@ -14,7 +14,11 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+<<<<<<< HEAD
+  name: jupyter-SERVICE_NAME-storage-jupyter-SERVICE_NAME-0
+=======
   name: jupyter-SERVICE_NAME-pvc
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
 spec:
   accessModes:
     - ReadWriteOnce
@@ -42,11 +46,19 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
+<<<<<<< HEAD
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - k8s-worker3
+=======
               - matchExpressions:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
                       - k8s-worker3
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
       containers:
         - name: jupyter
           image: adisurya1512/jupyterhub:test4
@@ -198,6 +210,17 @@ spec:
             claimName: package-jupyter
         - name: storage-volume
           persistentVolumeClaim:
+<<<<<<< HEAD
+            claimName: jupyter-SERVICE_NAME-storage-jupyter-SERVICE_NAME-0 
+  volumeClaimTemplates:
+  - metadata:
+      name: jupyter-SERVICE_NAME-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+=======
             claimName: jupyter-SERVICE_NAME-storage-jupyter-SERVICE_NAME-0
   volumeClaimTemplates:
     - metadata:
@@ -207,6 +230,7 @@ spec:
         resources:
           requests:
             storage: 1Gi
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
 ---
 apiVersion: v1
 kind: Service

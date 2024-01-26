@@ -10,8 +10,11 @@ load_dotenv()
 pb_user_url = os.environ.get('PB_USER_URL')
 pb_login_url = os.environ.get('PB_ADMIN_LOGIN_URL')
 print(pb_user_url)
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
 def user_create(j_port, username, password, email, first_name, last_name, created_by, company):
     print({
         "email": email,
@@ -22,11 +25,31 @@ def user_create(j_port, username, password, email, first_name, last_name, create
         "lastName": last_name,
         "role": "authenticated",
         "jToken": "test-token-123",
-        "jPort": j_port
+        "jPort": j_port,
+        "createdBy": created_by
     })
     pb_token = token_get()
     try:
         r = requests.post(pb_user_url,
+<<<<<<< HEAD
+                        json={
+                            "email": email,
+                            "password": password,
+                            "username": username,
+                            "passwordConfirm": password,
+                            "firstName": first_name,
+                            "lastName": last_name,
+                            "role": "authenticated",
+                            "jToken": "test-token-123",
+                            "jPort": j_port,
+                            "createdBy": created_by,
+                            "company": company
+                        },
+                        headers={
+                            "Authorization": "Bearer " + pb_token
+                        }
+        )
+=======
                           json={
                               "email": email,
                               "password": password,
@@ -42,6 +65,7 @@ def user_create(j_port, username, password, email, first_name, last_name, create
                               "Authorization": "Bearer " + pb_token
                           }
                           )
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
         return (True, None)
 
     except Exception as e:

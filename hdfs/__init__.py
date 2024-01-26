@@ -8,10 +8,16 @@ load_dotenv()
 
 hdfs_url = os.getenv('HDFS_URL')
 
+<<<<<<< HEAD
+def mkdir(path, username):
+    url = f'{hdfs_url}/webhdfs/v1{path}?user.name={username}&op=MKDIRS&op=SETPERMISSION&permission=770'
+    
+=======
 
 def mkdir(path, username):
     url = f'{hdfs_url}/webhdfs/v1{path}?user.name={username}&op=MKDIRS&op=SETPERMISSION&permission=770'
 
+>>>>>>> 534104d1b41fe05439dbf4d8181c9228ad064c86
     try:
         response = requests.put(url)
         response.raise_for_status()
